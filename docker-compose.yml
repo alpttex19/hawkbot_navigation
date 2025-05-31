@@ -1,7 +1,7 @@
 version: '3'
 services:
   ros_noetic:
-    build: .
+    image: ros_noetic_with_packages:latest
     volumes:
       - .:/catkin_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -13,5 +13,6 @@ services:
       - LIBGL_ALWAYS_SOFTWARE=1
       - MESA_GL_VERSION_OVERRIDE=3.3
       - XDG_RUNTIME_DIR=/tmp/runtime-root
+      - CONDA_PREFIX=/opt/conda
     network_mode: host
     privileged: true 

@@ -1,45 +1,26 @@
-# ROS Noetic Docker Environment
 
-This repository contains a Docker setup for ROS Noetic development.
+# 启动roscore
+roscore
 
-## Prerequisites
+# 启动gazebo仿真环境
+roslaunch hawkbot_gazebo hawkbot_autorace.launch 
 
-- Docker
-- Docker Compose
 
-## Building and Running
+# 启动gmapping建图
+roslaunch hawkbot gmapping_slam.launch
 
-1. Build the Docker image:
-```bash
-docker-compose build
-```
+# 启动遥控节点
+roslaunch hawkbot teleop_key_sim.launch
 
-2. Start the container:
-```bash
-docker-compose up -d
-```
+# 遥控机器人探索环境，完成建图后保存地图
+rosrun map_server map_saver -f hawkbot_map
 
-3. Enter the container:
-```bash
-docker-compose exec ros_noetic bash
-```
+#保存后，将地图文件复制到src/hawkbot/maps/hawkbot_map.yaml
 
-## Usage
 
-Once inside the container, you can:
-- Use ROS commands as normal
-- Build your workspace with `catkin build`
-- Run ROS nodes and launch files
+#关闭建图和遥控节点，启动导航节点
+roslaunch hawkbot navigation_sim.launch
 
-## Stopping the Container
 
-To stop the container:
-```bash
-docker-compose down
-```
 
-## Notes
 
-- The workspace is mounted as a volume, so changes made inside the container will persist on your host machine
-- The container has network access to your host machine
-- GUI applications are supported through X11 forwarding 

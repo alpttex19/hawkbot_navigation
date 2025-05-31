@@ -1,4 +1,0 @@
-Symlinking /catkin_ws/devel/lib/pkgconfig/hawkbot_gazebo.pc
-Symlinking /catkin_ws/devel/lib/hawkbot_gazebo/hawkbot_drive
-Symlinking /catkin_ws/devel/share/hawkbot_gazebo/cmake/hawkbot_gazeboConfig.cmake
-Symlinking /catkin_ws/devel/share/hawkbot_gazebo/cmake/hawkbot_gazeboConfig-version.cmake

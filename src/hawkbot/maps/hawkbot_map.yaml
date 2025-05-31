@@ -1,4 +1,4 @@
-image: ./hawkbot_map.pgm
+image: hawkbot_map.pgm
 resolution: 0.030000
 origin: [-9.990000, -9.990000, 0.000000]
 negate: 0
