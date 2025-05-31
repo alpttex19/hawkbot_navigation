@@ -1,0 +1,30 @@
+<launch>
+	<arg name="model" default="$(find xacro)/xacro --inorder '$(find hawkbot_description)/urdf/xacro/hawkbot.xacro'" />
+	<arg name="gui" default="true" />
+
+	<param name="robot_description" command="$(arg model)" />
+
+
+
+    <!-- 设置GUI参数，显示关节控制插件 -->
+	<param name="use_gui" value="$(arg gui)"/>
+
+<!-- 	<node pkg="tf" type="static_transform_publisher" name="base_to_link" args="0 0 0 0 0 0 base_footprint base_link 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_to_left_wheel"  args="-0.011 0.04 0.025 0 0 0 base_link left_wheel_link 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_to_right_wheel" args="-0.011 -0.04 0.02 0 0 0 base_link right_wheel_link 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_to_font_wheel" args="0.05 0.00 0 0 0 0 base_link font_wheel_link 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="-0.009 0 0.09 0 0 0 base_footprint base_scan  30"/> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_to_camera" args="0.06 0.00 0.06 0 0 0   base_footprint camera_link 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="base_to_gyro" args="0 0 0 0 0 0 base_footprint gyro_link 100" /> -->
+
+    <!-- 运行joint_state_publisher节点，发布机器人的关节状态  -->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+	<!-- 运行robot_state_publisher节点，发布tf  -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- 运行rviz可视化界面 -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find hawkbot_description)/config/hawkbot.rviz" required="true" />
+
+</launch>
+

@@ -1,0 +1,6 @@
+build/
+devel/
+install/
+log/
+src/hawkbot/maps/hawkbot_map.pgm
+src/hawkbot/maps/hawkbot_map.yaml

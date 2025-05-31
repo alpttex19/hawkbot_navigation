@@ -1,0 +1,5 @@
+hawkbot
+/catkin_ws/devel/.private/hawkbot/cmake.lock /catkin_ws/devel/./cmake.lock
+/catkin_ws/devel/.private/hawkbot/lib/pkgconfig/hawkbot.pc /catkin_ws/devel/lib/pkgconfig/hawkbot.pc
+/catkin_ws/devel/.private/hawkbot/share/hawkbot/cmake/hawkbotConfig-version.cmake /catkin_ws/devel/share/hawkbot/cmake/hawkbotConfig-version.cmake
+/catkin_ws/devel/.private/hawkbot/share/hawkbot/cmake/hawkbotConfig.cmake /catkin_ws/devel/share/hawkbot/cmake/hawkbotConfig.cmake

@@ -1,0 +1,33 @@
+<launch>
+    <arg name="sensor_frame" default="base_scan"/>
+    <arg name="robot_base_frame" default="base_footprint"/>
+    <arg name="global_frame" default="odom_combined"/>
+
+     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+      <rosparam file="$(find hawkbot)/config/costmap_common_params_sim.yaml" command="load" ns="global_costmap" />
+      <rosparam file="$(find hawkbot)/config/costmap_common_params_sim.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find hawkbot)/config/local_costmap_params_sim.yaml" command="load" />
+      <rosparam file="$(find hawkbot)/config/global_costmap_params_sim.yaml" command="load" />
+      <rosparam file="$(find hawkbot)/config/move_base_params_sim.yaml" command="load" />
+      <rosparam file="$(find hawkbot)/config/dwa_local_planner_params_sim.yaml" command="load" />
+
+      <param name="global_costmap/scan/sensor_frame" value="$(arg sensor_frame)"/>
+      <param name="global_costmap/obstacle_layer/scan/sensor_frame"
+	     value="$(arg sensor_frame)"/>
+
+	  <param name="global_costmap/global_frame" value="map"/>
+
+      <param name="global_costmap/robot_base_frame"
+	     value="$(arg robot_base_frame)"/>
+      <param name="local_costmap/scan/sensor_frame" value="$(arg sensor_frame)"/>
+	  <remap from="map" to="/map"/>
+      <param name="local_costmap/obstacle_layer/scan/sensor_frame"
+	     value="$(arg sensor_frame)"/>
+      <param name="local_costmap/global_frame" value="$(arg global_frame)"/>
+      <param name="local_costmap/robot_base_frame"
+	     value="$(arg robot_base_frame)"/>
+    </node>
+
+
+</launch>

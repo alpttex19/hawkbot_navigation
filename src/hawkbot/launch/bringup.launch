@@ -1,0 +1,49 @@
+<launch>
+    <arg name="ip" />
+    <arg name="id" default="" />
+    <arg name="cam_quality" default="7" />
+    <arg name="robot_param" default="" />
+    <node name="$(anon hawkbot_client)" pkg="hawkbot" type="bringup.py" args=" $(arg ip) 1 $(arg cam_quality) $(arg robot_param)" output="screen"/>
+    <node name="$(anon hawkbot_video)" pkg="hawkbot" type="bringup.py" args=" $(arg ip) 2 $(arg cam_quality) $(arg robot_param)" output="screen"/>
+    <node pkg="world_canvas_msgs" type="save" name="save_map_$(arg id)" />
+    <include file="$(find hawkbot)/launch/model.launch">
+       <arg name="id" value="$(arg id)" />
+     </include>
+     <include file="$(find hawkbot)/launch/ekf_imu.launch">
+             <arg name="ip" value="$(arg ip)" />
+             <arg name="id" value="$(arg id)" />
+     </include>
+     <group if="$(eval arg('id') =='')">
+          <node pkg="tf" type="static_transform_publisher" name="base_to_link" args="0 0 0 0 0 0 base_footprint base_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_left_wheel"  args="-0.011 0.04 0.025 0 0 0 base_link left_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_right_wheel" args="-0.011 -0.04 0.02 0 0 0 base_link right_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_font_wheel" args="0.05 0.00 0 0 0 0 base_link font_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="-0.009 0 0.09 0 0 0 base_footprint base_scan  30"/>
+          <node pkg="tf" type="static_transform_publisher" name="base_to_camera" args="0.06 0.00 0.06 0 0 0   base_footprint camera_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_gyro" args="0 0 0 0 0 0 base_footprint gyro_link 100" />
+
+          <include file="$(find hawkbot)/launch/lidar.launch">
+                 <arg name="ip" value="$(arg ip)" />
+                 <arg name="id" value="$(arg id)" />
+         </include>
+
+      </group>
+
+      <group if="$(eval arg('id') !='')">
+          <node pkg="tf" type="static_transform_publisher" name="base_to_link_$(arg id)" args="0 0 0 0 0 0 $(arg id)/base_footprint $(arg id)/base_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_left_wheel_$(arg id)"  args="-0.011 0.04 0.025 0 0 0 $(arg id)/base_link $(arg id)/left_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_right_wheel_$(arg id)" args="-0.011 -0.04 0.02 0 0 0 $(arg id)/base_link $(arg id)/right_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_font_wheel_$(arg id)" args="0.05 0.00 0 0 0 0 $(arg id)/base_link $(arg id)/font_wheel_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser_$(arg id)" args="-0.009 0 0.09 0 0 0 $(arg id)/base_footprint $(arg id)/base_scan  30"/>
+          <node pkg="tf" type="static_transform_publisher" name="base_to_camera_$(arg id)" args="0.06 0.00 0.06 0 0 0   $(arg id)/base_footprint $(arg id)/camera_link 100" />
+          <node pkg="tf" type="static_transform_publisher" name="base_to_gyro_$(arg id)" args="0 0 0 0 0 0 $(arg id)/base_footprint $(arg id)/gyro_link 100" />
+          <include  file="$(find hawkbot)/launch/lidar.launch">
+                 <arg name="ip" value="$(arg ip)" />
+                 <arg name="frame_id" value="$(arg id)/base_scan" />
+                 <arg name="id" value="$(arg id)" />
+         </include>
+      </group>
+
+
+
+</launch>

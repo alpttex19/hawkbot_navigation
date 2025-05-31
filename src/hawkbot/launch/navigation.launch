@@ -1,0 +1,97 @@
+<launch>
+  <arg name="id1"  default=""/>
+  <arg name="id2"  default=""/>
+  <arg name="id3"  default=""/>
+  <arg name="id4"  default=""/>
+  <arg name="id5"  default=""/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="map_file" default="$(find hawkbot)/maps/hawkbot_map.yaml"/>
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+
+   <group if="$(eval arg('id1') =='')">
+           <include file="$(find hawkbot)/launch/amcl.launch"></include>
+           <include file="$(find hawkbot)/launch/move_base.launch"></include>
+           <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find hawkbot)/rviz/navigation.rviz"/>
+		   <node name="$(anon send_mark)" pkg="hawkbot" type="send_mark.py"  output="screen"/>
+    </group>
+
+    <group if="$(eval arg('id1') !='')">
+        <group ns="$(arg id1)">
+           <include file="$(find hawkbot)/launch/amcl.launch">
+             <arg name="odom_frame_id" value="$(arg id1)/odom_combined"/>
+             <arg name="base_frame_id" value="$(arg id1)/base_footprint"/>
+           </include>
+
+           <include file="$(find hawkbot)/launch/move_base.launch">
+             <arg name="sensor_frame" default="$(arg id1)/base_scan"/>
+             <arg name="robot_base_frame" default="$(arg id1)/base_footprint"/>
+             <arg name="global_frame" default="$(arg id1)/odom_combined"/>
+           </include>
+        </group>
+        <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find hawkbot)/rviz/navigation_multi.rviz"/>
+    </group>
+
+    <group if="$(eval arg('id2') !='')">
+        <group ns="$(arg id2)">
+           <include file="$(find hawkbot)/launch/amcl.launch">
+             <arg name="odom_frame_id" value="$(arg id2)/odom_combined"/>
+             <arg name="base_frame_id" value="$(arg id2)/base_footprint"/>
+           </include>
+
+           <include file="$(find hawkbot)/launch/move_base.launch">
+             <arg name="sensor_frame" default="$(arg id2)/base_scan"/>
+            <arg name="robot_base_frame" default="$(arg id2)/base_footprint"/>
+            <arg name="global_frame" default="$(arg id2)/odom_combined"/>
+           </include>
+        </group>
+    </group>
+
+    <group if="$(eval arg('id3') !='')">
+        <group ns="$(arg id3)">
+           <include file="$(find hawkbot)/launch/amcl.launch">
+             <arg name="odom_frame_id" value="$(arg id3)/odom_combined"/>
+             <arg name="base_frame_id" value="$(arg id3)/base_footprint"/>
+           </include>
+
+           <include file="$(find hawkbot)/launch/move_base.launch">
+             <arg name="sensor_frame" default="$(arg id3)/base_scan"/>
+            <arg name="robot_base_frame" default="$(arg id3)/base_footprint"/>
+            <arg name="global_frame" default="$(arg id3)/odom_combined"/>
+           </include>
+        </group>
+    </group>
+
+    <group if="$(eval arg('id4') !='')">
+        <group ns="$(arg id4)">
+           <include file="$(find hawkbot)/launch/amcl.launch">
+             <arg name="odom_frame_id" value="$(arg id4)/odom_combined"/>
+             <arg name="base_frame_id" value="$(arg id4)/base_footprint"/>
+           </include>
+
+           <include file="$(find hawkbot)/launch/move_base.launch">
+             <arg name="sensor_frame" default="$(arg id4)/base_scan"/>
+            <arg name="robot_base_frame" default="$(arg id4)/base_footprint"/>
+            <arg name="global_frame" default="$(arg id4)/odom_combined"/>
+           </include>
+        </group>
+    </group>
+
+    <group if="$(eval arg('id5') !='')">
+        <group ns="$(arg id5)">
+           <include file="$(find hawkbot)/launch/amcl.launch">
+             <arg name="odom_frame_id" value="$(arg id5)/odom_combined"/>
+             <arg name="base_frame_id" value="$(arg id5)/base_footprint"/>
+           </include>
+
+           <include file="$(find hawkbot)/launch/move_base.launch">
+             <arg name="sensor_frame" default="$(arg id5)/base_scan"/>
+            <arg name="robot_base_frame" default="$(arg id5)/base_footprint"/>
+            <arg name="global_frame" default="$(arg id5)/odom_combined"/>
+           </include>
+        </group>
+    </group>
+
+
+</launch>
+

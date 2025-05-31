@@ -1,0 +1,21 @@
+<launch>
+    <arg name="ip" />
+    <arg name="id" default=""/>
+    <node name="imu_complementary_filter_$(arg id)" pkg="imu_complementary_filter" type="complementary_filter_node">
+        <param name="use_mag" value="false"/>
+        <param name="robot_ip"     type="string" value="$(arg ip)"/>
+    </node>
+
+    <node name="robot_pose_ekf_$(arg id)" pkg="robot_pose_ekf" type="robot_pose_ekf" >
+        <param name="robot_ip"     type="string" value="$(arg ip)"/>
+        <param name="freq" value="40.0"/>
+        <param name="sensor_timeout" value="1.0"/>
+        <param name="odom_used" value="true"/>
+        <param name="imu_used" value="true"/>
+
+
+    </node>
+
+
+
+</launch>

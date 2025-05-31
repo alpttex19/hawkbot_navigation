@@ -1,0 +1,6 @@
+hawkbot_applications/kcf_track
+/catkin_ws/devel/.private/kcf_track/cmake.lock /catkin_ws/devel/./cmake.lock
+/catkin_ws/devel/.private/kcf_track/lib/pkgconfig/kcf_track.pc /catkin_ws/devel/lib/pkgconfig/kcf_track.pc
+/catkin_ws/devel/.private/kcf_track/lib/kcf_track/kcf_track_node /catkin_ws/devel/lib/kcf_track/kcf_track_node
+/catkin_ws/devel/.private/kcf_track/share/kcf_track/cmake/kcf_trackConfig.cmake /catkin_ws/devel/share/kcf_track/cmake/kcf_trackConfig.cmake
+/catkin_ws/devel/.private/kcf_track/share/kcf_track/cmake/kcf_trackConfig-version.cmake /catkin_ws/devel/share/kcf_track/cmake/kcf_trackConfig-version.cmake

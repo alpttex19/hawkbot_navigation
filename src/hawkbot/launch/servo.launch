@@ -1,0 +1,4 @@
+<launch>
+  <arg name="id" default="null"/>
+  <node name="$(anon servo)" pkg="hawkbot" type="servo.py" args=" $(arg id) " output="screen"/>
+</launch>

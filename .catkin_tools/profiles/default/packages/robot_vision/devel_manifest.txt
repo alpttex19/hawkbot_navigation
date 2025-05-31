@@ -1,0 +1,5 @@
+hawkbot_applications/robot_vision
+/catkin_ws/devel/.private/robot_vision/cmake.lock /catkin_ws/devel/./cmake.lock
+/catkin_ws/devel/.private/robot_vision/lib/pkgconfig/robot_vision.pc /catkin_ws/devel/lib/pkgconfig/robot_vision.pc
+/catkin_ws/devel/.private/robot_vision/share/robot_vision/cmake/robot_visionConfig.cmake /catkin_ws/devel/share/robot_vision/cmake/robot_visionConfig.cmake
+/catkin_ws/devel/.private/robot_vision/share/robot_vision/cmake/robot_visionConfig-version.cmake /catkin_ws/devel/share/robot_vision/cmake/robot_visionConfig-version.cmake

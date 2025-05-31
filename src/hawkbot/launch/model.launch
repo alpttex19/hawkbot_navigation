@@ -1,0 +1,16 @@
+<launch>
+
+  <arg name="id" default=""/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find hawkbot)/model/hawkbot.urdf.xacro'" />
+
+  <param name="use_gui" value="True"/>
+
+  <!--<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>-->
+
+  <node  name="robot_state_publisher_$(arg id)"  pkg="robot_state_publisher"  type="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+
+    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find hawkbot)/rviz/model.rviz"/>-->
+
+</launch>

@@ -1,0 +1,50 @@
+<launch>
+  <arg name="id"  default="robot_02"/>
+  <!-- 是否开启避障功能 默认开启-->
+  <arg name="avoidance" value="false"/>
+  <!-- 在主机（领航者）的运动轨迹中分离出从机的期望跟随坐标  -->
+  <arg name="slave_x" value="0"/> 		<!-- slave_x为从机（跟随者）的期望x坐标，主机前方为正方向，单位：m  -->
+  <arg name="slave_y" value="0.4"/> 		<!-- slave_y为从机（跟随者）的期望y坐标，主机左方为正方向，单位：m  -->
+  <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg id)" args="$(arg slave_x) $(arg slave_y) 0 0 0 0   /robot_01/base_footprint $(arg id) 100" />
+
+  <!-- 多机编队的从机位姿初始化-->
+  <group ns ="$(arg id)">
+     <node name="pose_setter" pkg="hawkbot_multi" type="set_pose.py" args="0 0 0" output="screen" >
+      <param name='slave_x'    type='double' value='$(arg slave_x)'  />
+      <param name='slave_y'    type='double' value='$(arg slave_y)'  />
+   </node>
+
+    <!--   开启避障 -->
+   <group if="$(arg avoidance)">
+			<node name='laser_tracker' pkg="simple_follower" type="laserTracker.py"> <!-- 提取最近的障碍物距离信息 -->
+			  <param name="winSize" value="2" type="int" />
+			  <param name="deltaDist" value="0.2" type="double" />
+			</node>
+			<node pkg="hawkbot_multi" type="multi_avoidance" name="multi_avoidance" output="screen" > <!-- 发布速度信息 -->
+				<param name="avoidance_kv" type="double" value="0.1" /> 		<!-- 修正从车线速度的参数，参数越大，对从车减速作用越强 -->
+				<param name="avoidance_kw" type="double" value="0.2" /> 		<!-- 修正从车角速度的参数，参数越大，调节从车角度，使车头偏离障碍物的作用越强 -->
+				<param name="safe_distence" type="double" value="0.6" /> 		<!-- 安全距离界限 -->
+				<param name="danger_distence" type="double" value="0.3" /> 		<!-- 危险距离界限 -->
+			</node>
+
+   </group>
+   <node pkg="hawkbot_multi" type="slave_tf_listener" name="slave_tf_listener" output="screen" > -->
+ 		     <param name="k_v" type="double" value="0.6" /> 	<!-- 调节前后方向偏差时，k_v越大，线速度越大 -->
+		     <param name="k_l" type="double" value="0.6" /> 	<!-- 调节左右方向偏差时，k_l越大，角速度越大 -->
+ 		     <param name="k_a" type="double" value="1.5" />	<!-- 调节角度偏差时，k_a越大，角速度越大 -->
+		     <param name="slave_x" type="double" value="$(arg slave_x)" />
+ 		     <param name="slave_y" type="double" value="$(arg slave_y)" />
+ 		     <param name="max_vel_x" type="double" value="0.2" />
+ 		     <param name="min_vel_x" type="double" value="0.05" />
+ 		     <param name="max_vel_theta" type="double" value="2.0" />
+ 		     <param name="min_vel_theta" type="double" value="0.3" />
+	         <param name="base_to_slave" type="string" value="/$(arg id)" /> <!-- 期望跟随坐标的TF坐标名 -->
+	         <param name="base_frame" type="string" value="/robot_02/base_footprint" />  <!-- 从机的TF坐标名 -->
+	         <remap from="cmd_vel" to="/$(arg id)/cmd_vel" if="$(eval avoidance == false)"/>
+   </node>
+  </group>
+
+
+
+
+</launch>

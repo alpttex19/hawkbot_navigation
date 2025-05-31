@@ -1,0 +1,5 @@
+<launch>
+  <!-- 开启人脸追踪  -->
+  <include file='$(find simple_follower)/launch/nodes/faceTracker.launch' />
+
+</launch>

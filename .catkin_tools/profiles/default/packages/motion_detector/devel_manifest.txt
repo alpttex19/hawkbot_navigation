@@ -1,0 +1,5 @@
+hawkbot_applications/motion_detector
+/catkin_ws/devel/.private/motion_detector/cmake.lock /catkin_ws/devel/./cmake.lock
+/catkin_ws/devel/.private/motion_detector/lib/pkgconfig/motion_detector.pc /catkin_ws/devel/lib/pkgconfig/motion_detector.pc
+/catkin_ws/devel/.private/motion_detector/share/motion_detector/cmake/motion_detectorConfig-version.cmake /catkin_ws/devel/share/motion_detector/cmake/motion_detectorConfig-version.cmake
+/catkin_ws/devel/.private/motion_detector/share/motion_detector/cmake/motion_detectorConfig.cmake /catkin_ws/devel/share/motion_detector/cmake/motion_detectorConfig.cmake

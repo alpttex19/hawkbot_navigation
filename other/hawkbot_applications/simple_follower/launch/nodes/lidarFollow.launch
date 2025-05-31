@@ -1,0 +1,11 @@
+<launch>
+  <node name='follower' pkg="simple_follower" type="lidar_follow.py">
+    <!-- maximal speed (angular and linear both), tartet distance: the robot will try to keep this fixed distance -->
+    <param name="switchMode" value="True" type="bool" />
+    <param name='maxSpeed' value='0.1' type='double' />
+     <param name='targetDist' value='0.9' type='double' />
+    <!-- index of the button in the buttons field of the joy message from the ps3 controller, that switches active/inactive  -->
+    <param name='controllButtonIndex' value='-4' type='int' />
+  </node>
+</launch>
+

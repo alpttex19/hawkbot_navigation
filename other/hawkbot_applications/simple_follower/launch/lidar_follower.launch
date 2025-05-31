@@ -1,0 +1,5 @@
+<launch>
+  <!-- 开启激光雷达跟随以及pid计算节点  -->
+  <include file='$(find simple_follower)/launch/nodes/lidarTracker.launch' />
+  <include file='$(find simple_follower)/launch/nodes/lidarFollow.launch' />
+</launch>

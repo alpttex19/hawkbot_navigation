@@ -1,0 +1,4 @@
+<launch>
+  <arg name="id" default="null"/>
+  <node name="$(anon sound)" pkg="hawkbot" type="sound.py" args=" $(arg id) " output="screen"/>
+</launch>

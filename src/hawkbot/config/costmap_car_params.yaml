@@ -1,0 +1,16 @@
+
+#footprint: [[-0.07, -0.07], [-0.07, 0.07], [0.07, 0.07], [0.07, -0.07]]
+###机器人外形设置参数，直接影响代价地图
+#圆形机器人的外形设置，直接设置其外形半径
+robot_radius: 0.065
+
+
+#设置膨胀层参数
+#根据obstacle_layer、static_layer和footprint生成代价地图
+inflation_layer:
+  #是否开启膨胀层
+  enabled: true
+  #代价地图数值随与障碍物距离下降的比值，越大会导致路径规划越靠近障碍物
+  cost_scaling_factor: 35
+  #机器人膨胀半径，影响路径规划，单位：m
+  inflation_radius: 0.2

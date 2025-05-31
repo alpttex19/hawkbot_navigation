@@ -1,0 +1,5 @@
+hawkbot_applications/ar_track
+/catkin_ws/devel/.private/ar_track/cmake.lock /catkin_ws/devel/./cmake.lock
+/catkin_ws/devel/.private/ar_track/lib/pkgconfig/ar_track.pc /catkin_ws/devel/lib/pkgconfig/ar_track.pc
+/catkin_ws/devel/.private/ar_track/share/ar_track/cmake/ar_trackConfig-version.cmake /catkin_ws/devel/share/ar_track/cmake/ar_trackConfig-version.cmake
+/catkin_ws/devel/.private/ar_track/share/ar_track/cmake/ar_trackConfig.cmake /catkin_ws/devel/share/ar_track/cmake/ar_trackConfig.cmake
