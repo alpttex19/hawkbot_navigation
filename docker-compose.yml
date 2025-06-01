@@ -1,7 +1,7 @@
 version: '3'
 services:
   ros_noetic:
-    image: ros_noetic_with_packages:latest
+    image: ros_noetic_backup:v1.1
     volumes:
       - .:/catkin_ws
       - /tmp/.X11-unix:/tmp/.X11-unix

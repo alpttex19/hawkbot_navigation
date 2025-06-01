@@ -33,51 +33,19 @@ class Viewer:
         self.robot_t = rendering.Transform()
         self.robotobj.add_attr(self.robot_t)
 
-        size = [1.0] * 7  # 圆形障碍半径，原[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        size = np.random.rand(self.env.obs_num) * 2
+        # 圆形障碍半径，原[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
-        # Create the obstacle，创建障碍物
-        # self.obstacleobj = rendering.make_circle(radius=1.2,filled = False)
-        self.obstacleobj = rendering.make_circle(
-            radius=size[0], filled=False
-        )  # radius是半径，false表示不填充
-        self.obstacleobj.set_color(0, 0, 0)
-        self.obstacle_t = rendering.Transform()
-        self.obstacleobj.add_attr(self.obstacle_t)
-
-        # Create the obstacle
-        # self.obstacleobj1 = rendering.make_circle(radius=0.8,filled = False)
-        self.obstacleobj1 = rendering.make_circle(radius=size[1], filled=False)
-        self.obstacleobj1.set_color(0, 0, 0)
-        self.obstacle_t1 = rendering.Transform()
-        self.obstacleobj1.add_attr(self.obstacle_t1)
-
-        # Create the obstacle
-        # self.obstacleobj2 = rendering.make_circle(radius=1,filled = False)
-        self.obstacleobj2 = rendering.make_circle(radius=size[2], filled=False)
-        self.obstacleobj2.set_color(0, 0, 0)
-        self.obstacle_t2 = rendering.Transform()
-        self.obstacleobj2.add_attr(self.obstacle_t2)
-
-        self.obstacleobj3 = rendering.make_circle(radius=size[3], filled=False)
-        self.obstacleobj3.set_color(0, 0, 0)
-        self.obstacle_t3 = rendering.Transform()
-        self.obstacleobj3.add_attr(self.obstacle_t3)
-
-        # #当障碍物只有4个的时候，后面的3个障碍要注释掉
-        self.obstacleobj4 = rendering.make_circle(radius=size[4], filled=False)
-        self.obstacleobj4.set_color(0, 0, 0)
-        self.obstacle_t4 = rendering.Transform()
-        self.obstacleobj4.add_attr(self.obstacle_t4)
-
-        self.obstacleobj5 = rendering.make_circle(radius=size[5], filled=False)
-        self.obstacleobj5.set_color(0, 0, 0)
-        self.obstacle_t5 = rendering.Transform()
-        self.obstacleobj5.add_attr(self.obstacle_t5)
-
-        self.obstacleobj6 = rendering.make_circle(radius=size[6], filled=False)
-        self.obstacleobj6.set_color(0, 0, 0)
-        self.obstacle_t6 = rendering.Transform()
-        self.obstacleobj6.add_attr(self.obstacle_t6)
+        # Create obstacles using a loop
+        self.obstacleobjs = []
+        self.obstacle_ts = []
+        for i in range(self.env.obs_num):
+            obstacle = rendering.make_circle(radius=size[i], filled=False)
+            obstacle.set_color(0, 0, 0)
+            obstacle_t = rendering.Transform()
+            obstacle.add_attr(obstacle_t)
+            self.obstacleobjs.append(obstacle)
+            self.obstacle_ts.append(obstacle_t)
 
         # Create the goal location
         self.goalobj = rendering.make_circle(1.0)  # 目标图像圆直径
@@ -117,40 +85,12 @@ class Viewer:
         self.viewer.add_onetime(self.goalobj)
         self.goal_t.set_translation(*self.env.sim.goal_pos)
 
-        self.viewer.add_onetime(self.obstacleobj)
-        self.obstacle_t.set_translation(
-            self.env.obstacle[0][0], self.env.obstacle[1][0]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj1)
-        self.obstacle_t1.set_translation(
-            self.env.obstacle[0][1], self.env.obstacle[1][1]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj2)
-        self.obstacle_t2.set_translation(
-            self.env.obstacle[0][2], self.env.obstacle[1][2]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj3)
-        self.obstacle_t3.set_translation(
-            self.env.obstacle[0][3], self.env.obstacle[1][3]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj4)  ##4个障碍物时，这里也要注释掉
-        self.obstacle_t4.set_translation(
-            self.env.obstacle[0][4], self.env.obstacle[1][4]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj5)
-        self.obstacle_t5.set_translation(
-            self.env.obstacle[0][5], self.env.obstacle[1][5]
-        )
-
-        self.viewer.add_onetime(self.obstacleobj6)
-        self.obstacle_t6.set_translation(
-            self.env.obstacle[0][6], self.env.obstacle[1][6]
-        )
+        # Render obstacles using a loop
+        for i in range(self.env.obs_num):
+            self.viewer.add_onetime(self.obstacleobjs[i])
+            self.obstacle_ts[i].set_translation(
+                self.env.obstacle[0][i], self.env.obstacle[1][i]
+            )
 
         # Update trace
         self.pathTraceSpaceCounter = (

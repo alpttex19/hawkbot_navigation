@@ -2,8 +2,8 @@
 # coding=utf-8
 import rospy
 import math
-import PyKDL
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from tf.transformations import quaternion_from_euler
 
 
 class PoseSetter(rospy.SubscribeListener):
@@ -15,24 +15,26 @@ class PoseSetter(rospy.SubscribeListener):
         global position_x
         global position_y
 
-        self.slave_x = rospy.get_param('~slave_x',"-0.8")
-        self.slave_y = rospy.get_param('~slave_y',"0.8")
+        self.slave_x = rospy.get_param("~slave_x", "-0.8")
+        self.slave_y = rospy.get_param("~slave_y", "0.8")
 
     def peer_subscribe(self, topic_name, topic_publish, peer_publish):
         p = PoseWithCovarianceStamped()
-        #从车的初始位姿
+        # 从车的初始位姿
         position_x = self.pose[0] + self.slave_x
         position_y = self.pose[1] + self.slave_y
 
         p.pose.pose.position.x = position_x
         p.pose.pose.position.y = position_y
-        (p.pose.pose.orientation.x,
-         p.pose.pose.orientation.y,
-         p.pose.pose.orientation.z,
-         p.pose.pose.orientation.w) = PyKDL.Rotation.RPY(0, 0, self.pose[2]).GetQuaternion()
-        p.pose.covariance[6*0+0] = 0.5 * 0.5
-        p.pose.covariance[6*1+1] = 0.5 * 0.5
-        p.pose.covariance[6*3+3] = math.pi/12.0 * math.pi/12.0
+        (
+            p.pose.pose.orientation.x,
+            p.pose.pose.orientation.y,
+            p.pose.pose.orientation.z,
+            p.pose.pose.orientation.w,
+        ) = quaternion_from_euler(0, 0, self.pose[2])
+        p.pose.covariance[6 * 0 + 0] = 0.5 * 0.5
+        p.pose.covariance[6 * 1 + 1] = 0.5 * 0.5
+        p.pose.covariance[6 * 3 + 3] = math.pi / 12.0 * math.pi / 12.0
         # wait for the desired publish time
         while rospy.get_rostime() < self.publish_time:
             rospy.sleep(0.01)
@@ -40,7 +42,7 @@ class PoseSetter(rospy.SubscribeListener):
         print(topic_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pose = list(map(float, rospy.myargv()[1:4]))
     t_stamp = rospy.Time()
     t_publish = rospy.Time()
@@ -48,7 +50,16 @@ if __name__ == '__main__':
         t_stamp = rospy.Time.from_sec(float(rospy.myargv()[4]))
     if len(rospy.myargv()) > 5:
         t_publish = rospy.Time.from_sec(float(rospy.myargv()[5]))
-    rospy.init_node('pose_setter', anonymous=True)
-    rospy.loginfo("Going to publish pose {} with stamp {} at {}".format(pose, t_stamp.to_sec(), t_publish.to_sec()))
-    pub = rospy.Publisher("initialpose", PoseWithCovarianceStamped, PoseSetter(pose, stamp=t_stamp, publish_time=t_publish), queue_size=1)
+    rospy.init_node("pose_setter", anonymous=True)
+    rospy.loginfo(
+        "Going to publish pose {} with stamp {} at {}".format(
+            pose, t_stamp.to_sec(), t_publish.to_sec()
+        )
+    )
+    pub = rospy.Publisher(
+        "initialpose",
+        PoseWithCovarianceStamped,
+        PoseSetter(pose, stamp=t_stamp, publish_time=t_publish),
+        queue_size=1,
+    )
     rospy.spin()

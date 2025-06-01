@@ -33,11 +33,13 @@ class CarEnv(gym.Env):
             [[7, 15, 17, 19, 22, 27, 27], [20, 16, 10, 26, 6, 13, 20]]
         )
         self.obstacle = np.array(
-            [[7, 15, 17, 19, 22, 27, 27], [6, 13, 20, 20, 16, 10, 26]]
+            [[22, 27, 27, 7, 15, 17, 19, 22, 27], [6, 13, 20, 20, 16, 10, 26, 27, 20]]
         )
 
+        self.obstacle = np.random.randint(0, 30, size=(2, 30))
+
         self.obs_num = len(self.obstacle[0, :])
-        self.goal_pos = np.array([5, 5])
+        self.goal_pos = np.array([3, 5])
 
         self.sim = Simulation(self.dt, self.goal_pos)
         self.get_virtual_position = lambda: self.sim.position  # 获取虚拟位置
@@ -355,7 +357,7 @@ if __name__ == "__main__":
 
     np.random.seed(1)
     env = CarEnv()
-    for ep in range(100):
+    for ep in range(10):
         sum_r = 0
         s = env.reset()
         while True:

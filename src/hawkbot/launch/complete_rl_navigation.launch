@@ -1,0 +1,39 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="open_rviz" default="true"/>
+  <arg name="map_file" default="$(find hawkbot)/maps/hawkbot_map.yaml"/>
+  <arg name="model_path" default="$(find hawkbot)/nodes/my_navigation/train_result/model14/best_model.zip"/>
+  <arg name="enable_monitor" default="true"/>
+  <arg name="verbose" default="false"/>
+  
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL for localization -->
+  <include file="$(find hawkbot)/launch/amcl.launch"/>
+
+  <!-- RL Navigation Node (替换move_base) -->
+  <node pkg="hawkbot" type="rl_navigation_node.py" name="rl_navigation_node" output="screen">
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="goal_threshold" value="0.6"/>
+    <param name="max_linear_vel" value="5.0"/>
+    <param name="max_angular_vel" value="0.524"/>  <!-- pi/6 -->
+    <param name="control_frequency" value="50"/>
+    <remap from="/cmd_vel" to="/cmd_vel"/>
+  </node>
+
+  <!-- RL Navigation Monitor (调试和可视化) -->
+  <node pkg="hawkbot" type="rl_nav_monitor.py" name="rl_nav_monitor" output="screen" if="$(arg enable_monitor)">
+    <param name="verbose" value="$(arg verbose)"/>
+  </node>
+
+  <!-- Send mark node for goal setting (修改版) -->
+  <node name="$(anon rl_send_mark)" pkg="hawkbot" type="rl_send_mark.py" output="screen"/>
+
+  <!-- RViz visualization -->
+  <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find hawkbot)/rviz/my_navigation.rviz" if="$(arg open_rviz)"/>
+
+  <!-- 静态TF发布器（如果需要） -->
+  <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="base_scan_broadcaster" args="0 0 0 0 0 0 base_footprint base_scan"/> -->
+
+</launch>
