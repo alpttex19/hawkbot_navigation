@@ -20,6 +20,19 @@ from my_navigation.new_car_env_dy_obs import CarEnv
 from my_navigation.simulation_car_curve_obs_new import Simulation
 
 
+class State:
+
+    # 加速度，角加速度，x， y， 角度， 速度， 角速度
+    def __init__(self):
+        self.a = 0
+        self.w = 0
+        self.x = 0
+        self.y = 0
+        self.theta = 0
+        self.v = 0
+        self.φ = 0
+
+
 class RLNavigationNode:
     def __init__(self):
         rospy.init_node("rl_navigation_node", anonymous=True)
@@ -41,13 +54,16 @@ class RLNavigationNode:
         # TF监听器
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+        self.dt = 0.01
+        self.L = 0.001  # 小车轴距，原0.001，后来改成1.4  ##2024.7.12，试着改成0.5
 
         # 强化学习模型
         self.model = None
         self.load_model()
 
         # 环境仿真器（用于状态处理）
-        self.sim = Simulation(dt=0.01, goal_pos=np.array([0, 0]))
+        # 加速度，角加速度，x， y， 角度， 速度， 角速度
+        self.state = State()
 
         # 障碍物信息
         self.obstacles = np.zeros((2, 20))  # 动态障碍物位置
@@ -123,7 +139,6 @@ class RLNavigationNode:
             goal_pos = np.array(
                 [goal_transformed.pose.position.x, goal_transformed.pose.position.y]
             )
-            self.sim.goal_pos = goal_pos
 
             rospy.loginfo(f"New goal received: ({goal_pos[0]:.2f}, {goal_pos[1]:.2f})")
 
@@ -150,21 +165,20 @@ class RLNavigationNode:
             (_, _, yaw) = euler_from_quaternion(orientation_list)
 
             # 更新仿真器位置（注意：这里只更新位置，速度等从里程计获取）
-            self.sim._state[2] = x  # x position
-            self.sim._state[3] = y  # y position
-            self.sim._state[4] = yaw  # theta
+            self.state.x = x
+            self.state.y = y
+            self.state.theta = yaw
 
     def odom_callback(self, msg):
         """接收里程计信息（用于获取速度）"""
-        if hasattr(self.sim, "_state"):
-            # 更新线速度和角速度
-            linear_vel = math.sqrt(
-                msg.twist.twist.linear.x**2 + msg.twist.twist.linear.y**2
-            )
-            angular_vel = msg.twist.twist.angular.z
+        # 更新线速度和角速度
+        linear_vel = math.sqrt(
+            msg.twist.twist.linear.x**2 + msg.twist.twist.linear.y**2
+        )
+        angular_vel = msg.twist.twist.angular.z
 
-            self.sim._state[5] = linear_vel  # v
-            self.sim._state[1] = angular_vel  # w
+        self.state.v = linear_vel
+        self.state.w = angular_vel
 
     def laser_callback(self, msg):
         """接收激光雷达数据"""
@@ -282,10 +296,6 @@ class RLNavigationNode:
         ]
         (_, _, theta) = euler_from_quaternion(orientation_list)
 
-        # 速度信息（从仿真器获取）
-        v = self.sim._state[5] if hasattr(self.sim, "_state") else 0.0
-        phi = self.sim._state[6] if hasattr(self.sim, "_state") else 0.0
-
         # 找到最近的障碍物
         min_obs_dist = float("inf")
         closest_obs_idx = 0
@@ -304,9 +314,17 @@ class RLNavigationNode:
         goal_y = self.current_goal.pose.position.y
         goal_dist = math.sqrt((x - goal_x) ** 2 + (y - goal_y) ** 2)
 
-        # 构建观测向量 [x, y, theta, v, phi, obs_dist, goal_dist]
+        # x, y, theta, v, φ, obs_dist, goal_dist
         observation = np.array(
-            [x, y, theta, v, phi, min_obs_dist, goal_dist], dtype=np.float32
+            [
+                self.state.x,
+                self.state.y,
+                self.state.theta,
+                self.state.v,
+                self.state.φ,
+                min_obs_dist,
+                goal_dist,
+            ]
         )
 
         return observation
@@ -320,7 +338,6 @@ class RLNavigationNode:
         goal_y = self.current_goal.pose.position.y
         robot_x = self.current_pose.position.x
         robot_y = self.current_pose.position.y
-        logger.info(f"robot_xy: {robot_x}, {robot_y}, goal_xy: {goal_x}, {goal_y}")
 
         distance = math.sqrt((goal_x - robot_x) ** 2 + (goal_y - robot_y) ** 2)
         return distance < self.goal_threshold
@@ -330,20 +347,56 @@ class RLNavigationNode:
         if action is None:
             return
 
-        u, w = action
-
-        # 归一化动作到实际速度范围
-        u = (np.tanh(u) + 1) / 2 * (
-            self.max_linear_vel - self.min_linear_vel
-        ) + self.min_linear_vel
-        w = np.tanh(w) * self.max_angular_vel
+        new_v, new_theta = self.calculate_v_w(action)
 
         # 创建Twist消息
         cmd_vel = Twist()
-        cmd_vel.linear.x = u
-        cmd_vel.angular.z = w
+        cmd_vel.linear.x = new_v
+        cmd_vel.angular.z = new_theta
 
         self.cmd_pub.publish(cmd_vel)
+
+    def calculate_v_w(self, action):
+        u, w = action
+
+        # 归一化动作到实际速度范围
+        next_a = (np.tanh(u) + 1) / 2 * (
+            self.max_linear_vel - self.min_linear_vel
+        ) + self.min_linear_vel
+        next_w = np.tanh(w) * self.max_angular_vel
+
+        if next_w > 0:
+            if 1 - next_w < 0.1:
+                next_w = next_w / 2
+        else:
+            if 1 + next_w < 0.1:
+                next_w = next_w / 2
+
+        vel = self.state.v  # v
+        theta = self.state.theta  # w
+
+        # Update state
+        new_v = vel + next_a * self.dt
+        if new_v > 5:  # 限速有效，原先限制为5
+            new_v = 5
+        # new_φ = φ + next_w * self.dt  #2024.7.10试用这个  #ps：好像不行
+        new_φ = next_w * self.dt  # 之前SAC都是用的这个
+        # if new_φ > np.pi/4:
+        #     new_φ = np.pi/4
+        # else:
+        #     if new_φ < -np.pi/4:
+        #         new_φ = np.pi/4
+        new_theta = theta + (new_v * np.tan(new_φ) * self.dt / self.L)
+        while new_theta > np.pi:
+            new_theta -= np.pi * 2
+        while new_theta < -np.pi:
+            new_theta += np.pi * 2
+
+        self.state.v = new_v
+        self.state.φ = new_φ
+        self.state.theta = new_theta
+
+        return new_v, new_theta
 
     def stop_robot(self):
         """停止机器人"""
