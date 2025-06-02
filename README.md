@@ -23,4 +23,9 @@ roslaunch hawkbot navigation_sim.launch
 
 
 
+# 强化学习导航算法
+roslaunch hawkbot rl_navigation.launch
+
+
+
 
